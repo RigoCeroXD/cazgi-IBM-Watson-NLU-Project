@@ -1,5 +1,28 @@
 const express = require('express');
+const dotenv = require('dotenv');
+dotenv.config();
 const app = new express();
+
+
+function getNLUInstance(){
+    let api_key = process.env.API_KEY;
+    let api_url = process.env.API_URL;
+
+    const NaturalLanguageUnderstandingV1 = requiere('ibm-watson/natural-language-understanding/v1');
+    const { IamAuthentication } = requiere('ibm-watson/auth');
+
+    const naturalLanguageUnderstanding = new NaturalLanguageUnderstandingV1({
+        version: '2020-08-01',
+        authenticator: new IamAuthentication({
+            apikey: api_key,
+        }),
+        serviceUrl: api_url,
+    });
+    return naturalLanguageUnderstanding;
+ }
+
+
+
 
 app.use(express.static('client'))
 
@@ -10,7 +33,7 @@ app.get("/",(req,res)=>{
     res.render('index.html');
   });
 
-app.get("/url/emotion", (req,res) => {
+app.getNLUInstance("/url/emotion", (req,res) => {
 
     return res.send({"happy":"90","sad":"10"});
 });
@@ -19,7 +42,7 @@ app.get("/url/sentiment", (req,res) => {
     return res.send("url sentiment for "+req.query.url);
 });
 
-app.get("/text/emotion", (req,res) => {
+app.getNLUInstance("/text/emotion", (req,res) => {
     return res.send({"happy":"10","sad":"90"});
 });
 
